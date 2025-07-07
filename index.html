@@ -1,352 +1,286 @@
 <!DOCTYPE html>
-<html lang="en" class="transition duration-300">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Advanced Admin Dashboard with Enhanced Table</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Tailwind Dark Mode Config -->
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: "#3b82f6",
-                    },
-                },
-            },
+                        primary: '#3b82f6'
+                    }
+                }
+            }
         };
     </script>
 
     <!-- FontAwesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Tippy.js for tooltips -->
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css" />
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
 
     <!-- DataTables CSS & JS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-    <!-- DataTables Buttons (export) -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" />
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-
     <style>
-        .active-menu>ul {
-            display: block !important;
-        }
-
-        .menu-item>ul {
-            display: none;
-            /* keep hidden by default */
-        }
-
-        /* Add down arrow icon after dropdown toggle links */
         .dropdown-toggle::after {
             content: "\f078";
-            /* FontAwesome's chevron-down */
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
             float: right;
             margin-left: 8px;
             transition: transform 0.3s ease;
-            color: inherit;
-            /* use current text color */
         }
 
-        /* Optional: rotate arrow when submenu is open */
         .dropdown-toggle.open::after {
             transform: rotate(180deg);
         }
 
-        .menu-item-links .menu-item .nav-link {
-            transition: all 0.2s ease-in-out;
+        .app-collapsed .nav-link span {
+            display: none;
         }
 
-        .menu-item-links .menu-item .nav-link:hover, .nav-link.active-menu {
-            background-color: #e1e1e1;
+        .app-collapsed .nav-link {
+            justify-content: center;
+            text-align: center;
+            padding-left: 0;
+            padding-right: 0;
         }
     </style>
 </head>
 
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white flex min-h-screen">
-
-    <!-- Sidebar -->
-    <aside id="sidebar"
-        class="w-64 bg-white dark:bg-gray-800 shadow-md fixed top-0 left-0 h-full transition-transform transform -translate-x-full md:translate-x-0 z-40">
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-10">
-                <h2 class="text-xl font-bold">Admin Panel</h2>
-                <button class="md:hidden text-2xl text-red-500" id="closeSidebarBtn" aria-label="Close sidebar">
-                    <i class="fas fa-times dark:text-white"></i>
-                </button>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white">
+    <div id="app" class="flex min-h-screen transition-all duration-300">
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="w-64 md:translate-x-0 -translate-x-full md:block bg-white dark:bg-gray-800 fixed top-0 left-0 h-full z-40 shadow-md transition-all duration-300">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-2">
+                    <div></div>
+                    <div>
+                        <button class="md:hidden text-xl text-red-500" id="closeSidebarBtn"><i
+                                class="fas fa-times"></i></button>
+                        <button class="hidden md:inline-block" onclick="toggleSidebar()"><i
+                                class="fas fa-arrows-left-right"></i></button>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <h1>Logo</h1>
+                </div>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="#"
+                            class="nav-link flex items-center gap-2 px-3 py-2 font-medium text-gray-700 dark:text-white"
+                            data-tippy-content="Dashboard">
+                            <i class="fas fa-chart-line"></i><span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)"
+                            class="dropdown-toggle nav-link flex items-center gap-2 px-3 py-2 font-medium text-gray-700 dark:text-white">
+                            <i class="fas fa-layer-group"></i><span>Menu</span>
+                        </a>
+                        <ul class="ml-6 mt-2 space-y-1 hidden">
+                            <li><a href="#"
+                                    class="block px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Submenu
+                                    1</a></li>
+                            <li><a href="#"
+                                    class="block px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Submenu
+                                    2</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="nav-link flex items-center gap-2 px-3 py-2 font-medium text-gray-700 dark:text-white"
+                            data-tippy-content="Users">
+                            <i class="fas fa-users"></i><span>Users</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
-            <ul class="menu-item-links space-y-2">
-                <li class="menu-item">
-                    <a class="nav-link block py-1 px-3 text-gray-700 font-semibold dark:text-white active-menu" href="index.html">
-                        <i class="fas fa-chart-line mr-2"></i>
-                        Dashboard</a>
-                </li>
-                <li class="menu-item">
-                    <a href="#" class="nav-link block py-1 px-3 text-gray-700 font-semibold dark:text-white "><i
-                            class="fas fa-users mr-2"></i> Users</a>
-                </li>
-                <li class="menu-item dropdown-menu">
-                    <a class="nav-link dropdown-toggle block py-1 px-3 font-semibold" href="javascript:vodi(0)"> <i
-                            class="fas fa-chart-line mr-2"></i> Web Content</a>
+        </aside>
 
-                    <ul class="sub-menu ml-6 mt-2 hidden text-sm text-gray-600  ddark:text-gray-300">
-                        <li class="menu-item">
-                            <a href="#" class="nav-link block py-1 px-3 font-semibold">Home Page</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="nav-link block py-1 px-3 font-semibold">About Page</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="menu-item">
-                    <a href="#" class="nav-link block py-1 px-3 text-gray-700 font-semibold dark:text-white">
-                        <i class="fas fa-cog mr-2"></i>
-                        Settings</a>
-                </li>
-            </ul>
-        </div>
-    </aside>
-
-    <!-- Main Content Wrapper -->
-    <div class="flex-1 md:ml-64 flex flex-col w-full">
-        <!-- Navbar -->
-        <header
-            class="bg-white dark:bg-gray-800 shadow-md px-6 py-4 flex items-center justify-between sticky top-0 z-20">
-            <div class="flex items-center gap-4">
-                <button class="md:hidden text-2xl" id="openSidebarBtn" aria-label="Open sidebar">
-                    <i class="fas fa-bars text-gray-700 dark:text-white"></i>
-                </button>
-                <span class="text-xl font-bold text-gray-800 dark:text-white">Dashboard</span>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <!-- Theme toggle -->
-                <button onclick="document.documentElement.classList.toggle('dark')" title="Toggle Dark Mode"
-                    aria-label="Toggle dark mode">
-                    <i class="fas fa-moon text-gray-700 dark:text-white"></i>
-                </button>
-
-                <!-- Profile Dropdown -->
-                <div class="relative">
-                    <button id="profileToggle" class="flex items-center gap-2 focus:outline-none" aria-haspopup="true"
-                        aria-expanded="false">
-                        <i class="fas fa-user-circle text-2xl text-gray-700 dark:text-white"></i>
-                        <i class="fas fa-chevron-down text-sm text-gray-600 dark:text-gray-300"></i>
+        <!-- Main Content -->
+        <div class="flex-1 md:ml-64 transition-all duration-300" id="mainContent">
+            <!-- Navbar -->
+            <header
+                class="bg-white dark:bg-gray-800 px-6 py-4 shadow flex items-center justify-between sticky top-0 z-20">
+                <div class="flex items-center gap-4">
+                    <button class="md:hidden text-2xl" id="openSidebarBtn"><i
+                            class="fas fa-bars text-gray-700 dark:text-white"></i></button>
+                    <span class="text-xl font-bold text-gray-800 dark:text-white">Admin Dashboard</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="document.documentElement.classList.toggle('dark')" title="Toggle Dark Mode">
+                        <i class="fas fa-moon text-gray-700 dark:text-white"></i>
                     </button>
-                    <div id="profileMenu"
-                        class="hidden absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 border rounded shadow-md"
-                        role="menu" aria-label="User menu">
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            role="menuitem">Profile</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            role="menuitem">Settings</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            role="menuitem">Logout</a>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Section -->
-        <main class="p-6 flex-grow overflow-auto">
-            <!-- Dashboard Cards -->
-            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6"
-                aria-label="Dashboard statistics">
-                <div class="bg-white dark:bg-gray-800 p-6 rounded shadow gap-4">
-                    <h3 class="text-lg md:text-2xl font-semibold mb-3">Users</h3>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <i class="fas fa-users text-3xl text-primary"></i>
+                    <div class="relative">
+                        <button id="profileToggle" class="flex items-center gap-2">
+                            Admin <i class="fas fa-user-circle text-2xl"></i>
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </button>
+                        <div id="profileMenu"
+                            class="hidden absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 border rounded shadow-md z-50">
+                            <a href="#" class="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                <i class="fas fa-user mr-2"></i> Profile
+                            </a>
+                            <a href="#" class="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                <i class="fas fa-cog mr-2"></i> Settings
+                            </a>
+                            <a href="#" class="text-red-500 flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            </a>
                         </div>
-                        <p class="text-3xl font-bold mt-2">1,024</p>
+
                     </div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 p-6 rounded shadow gap-4">
-                    <h3 class="text-lg md:text-2xl font-semibold mb-3">Sales</h3>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <i class="fas fa-dollar-sign text-3xl text-primary"></i>
-                        </div>
-                        <p class="text-3xl font-bold mt-2">$34,850</p>
+            </header>
+
+            <main class="p-6 space-y-6">
+                <!-- Dashboard Cards -->
+                <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow text-center">
+                        <h3 class="text-lg font-semibold mb-2">Users</h3>
+                        <i class="fas fa-users text-3xl text-primary mb-2"></i>
+                        <p class="text-2xl font-bold">1,024</p>
                     </div>
-                </div>
-                <div class="bg-white dark:bg-gray-800 p-6 rounded shadow gap-4">
-                    <h3 class="text-lg md:text-2xl font-semibold mb-3">New Orders</h3>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <i class="fas fa-shopping-cart text-3xl text-primary"></i>
-                        </div>
-                        <p class="text-3xl font-bold mt-2">278</p>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow text-center">
+                        <h3 class="text-lg font-semibold mb-2">Sales</h3>
+                        <i class="fas fa-dollar-sign text-3xl text-primary mb-2"></i>
+                        <p class="text-2xl font-bold">$34,850</p>
                     </div>
-                </div>
-                <div class="bg-white dark:bg-gray-800 p-6 rounded shadow gap-4">
-                    <h3 class="text-lg md:text-2xl font-semibold mb-3">Visitors</h3>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <i class="fas fa-chart-line text-3xl text-primary"></i>
-                        </div>
-                        <p class="text-3xl font-bold mt-2">12,450</p>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow text-center">
+                        <h3 class="text-lg font-semibold mb-2">Orders</h3>
+                        <i class="fas fa-shopping-cart text-3xl text-primary mb-2"></i>
+                        <p class="text-2xl font-bold">278</p>
                     </div>
-                </div>
-            </section>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow text-center">
+                        <h3 class="text-lg font-semibold mb-2">Visitors</h3>
+                        <i class="fas fa-chart-line text-3xl text-primary mb-2"></i>
+                        <p class="text-2xl font-bold">12,450</p>
+                    </div>
+                </section>
 
+                <!-- DataTable -->
+                <section>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded shadow overflow-x-auto">
+                        <h2 class="text-lg font-semibold mb-4">User Table</h2>
+                        <table id="userTable" class="display w-full">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="flex items-center space-x-3">
+                                        <img src="https://i.pravatar.cc/40?img=1" alt="Rashidul Islam"
+                                            class="rounded-full w-10 h-10 object-cover" />
+                                        <span>Rashidul Islam</span>
+                                    </td>
+                                    <td>rashidul@example.com</td>
+                                    <td>Admin</td>
+                                    <td>2025-01-15</td>
+                                    <td class="space-x-2">
+                                        <button title="View" class="text-blue-500 hover:text-blue-700">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button title="Edit" class="text-green-500 hover:text-green-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button title="Delete" class="text-red-500 hover:text-red-700">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="flex items-center space-x-3">
+                                        <img src="https://i.pravatar.cc/40?img=2" alt="Farzana Akter"
+                                            class="rounded-full w-10 h-10 object-cover" />
+                                        <span>Farzana Akter</span>
+                                    </td>
+                                    <td>farzana@example.com</td>
+                                    <td>Editor</td>
+                                    <td>2025-03-10</td>
+                                    <td class="space-x-2">
+                                        <button title="View" class="text-blue-500 hover:text-blue-700">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button title="Edit" class="text-green-500 hover:text-green-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button title="Delete" class="text-red-500 hover:text-red-700">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
+                    </div>
+                </section>
+            </main>
 
-            <!-- DataTable Section -->
-            <section aria-label="Orders table">
-                <div class="bg-white dark:bg-gray-800 p-4 rounded shadow overflow-x-auto">
-                    <h2 class="text-lg font-semibold mb-4">Users</h2>
-                    <table id="myTable" class="display w-full" style="width: 100%">
-                        <thead>
-                            <tr>
-                                <th>Profile</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Joined</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <img src="https://i.pravatar.cc/40?u=rashidul" alt="Rashidul Islam"
-                                        class="w-10 h-10 rounded-full" />
-                                </td>
-                                <td>Rashidul Islam</td>
-                                <td>rashidul@example.com</td>
-                                <td>Admin</td>
-                                <td>2025-01-15</td>
-                                <td class="space-x-2 whitespace-nowrap">
-                                    <button class="text-green-600 hover:text-green-800" title="View"
-                                        aria-label="View Rashidul Islam">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="text-blue-600 hover:text-blue-800" title="Edit"
-                                        aria-label="Edit Rashidul Islam">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-800" title="Delete"
-                                        aria-label="Delete Rashidul Islam">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img src="https://i.pravatar.cc/40?u=farzana" alt="Farzana Akter"
-                                        class="w-10 h-10 rounded-full" />
-                                </td>
-                                <td>Farzana Akter</td>
-                                <td>farzana@example.com</td>
-                                <td>Editor</td>
-                                <td>2025-03-10</td>
-                                <td class="space-x-2 whitespace-nowrap">
-                                    <button class="text-green-600 hover:text-green-800" title="View"
-                                        aria-label="View Farzana Akter">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="text-blue-600 hover:text-blue-800" title="Edit"
-                                        aria-label="Edit Farzana Akter">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-800" title="Delete"
-                                        aria-label="Delete Farzana Akter">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img src="https://i.pravatar.cc/40?u=mehedi" alt="Mehedi Hasan"
-                                        class="w-10 h-10 rounded-full" />
-                                </td>
-                                <td>Mehedi Hasan</td>
-                                <td>mehedi@example.com</td>
-                                <td>Subscriber</td>
-                                <td>2024-12-22</td>
-                                <td class="space-x-2 whitespace-nowrap">
-                                    <button class="text-green-600 hover:text-green-800" title="View"
-                                        aria-label="View Mehedi Hasan">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="text-blue-600 hover:text-blue-800" title="Edit"
-                                        aria-label="Edit Mehedi Hasan">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-800" title="Delete"
-                                        aria-label="Delete Mehedi Hasan">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="bg-white dark:bg-gray-800 text-center p-4 text-sm" aria-label="Page footer">
-            &copy; 2025 Admin Dashboard. All rights reserved.
-        </footer>
+            <footer class="text-center p-4 bg-white dark:bg-gray-800 text-sm">
+                &copy; 2025 Admin Dashboard. All rights reserved.
+            </footer>
+        </div>
     </div>
 
     <!-- Scripts -->
     <script>
-        // Sidebar toggle button for mobile
-        $("#openSidebarBtn").click(function () {
-            $("#sidebar").removeClass("-translate-x-full");
+        document.getElementById('openSidebarBtn').onclick = () => {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+        };
+        document.getElementById('closeSidebarBtn').onclick = () => {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+        };
+
+        document.getElementById('profileToggle').onclick = () => {
+            document.getElementById('profileMenu').classList.toggle('hidden');
+        };
+
+        function toggleSidebar() {
+            const app = document.getElementById('app');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            app.classList.toggle('app-collapsed');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+            mainContent.classList.toggle('md:ml-64');
+            mainContent.classList.toggle('md:ml-20');
+        }
+
+        tippy('[data-tippy-content]', {
+            theme: 'light',
+            placement: 'right',
+            delay: [0, 0],
+            offset: [0, 10],
         });
-        $("#closeSidebarBtn").click(function () {
-            $("#sidebar").addClass("-translate-x-full");
-        });
 
-
-        $(".dropdown-toggle").click(function (e) {
-            e.preventDefault();
-
-            // Toggle submenu visibility
-            $(this).next("ul").slideToggle(200);
-
-            // Toggle arrow rotation class on clicked link
-            $(this).toggleClass("open");
-
-            // Close other submenus and reset arrows
-            $(".dropdown-toggle").not(this).removeClass("open").next("ul").slideUp(200);
-        });
-
-
-        // Profile dropdown toggle
-        $("#profileToggle").click(function () {
-            $("#profileMenu").toggle();
-        });
-
-
-
-        // Initialize DataTable with export buttons
         $(document).ready(function () {
-            $("#myTable").DataTable({
-                responsive: true,
-                dom: 'Bfrtip',
-                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+            $('#userTable').DataTable();
+
+            $('.dropdown-toggle').click(function () {
+                $(this).next('ul').slideToggle(200);
+                $(this).toggleClass('open');
+                $('.dropdown-toggle').not(this).removeClass('open').next('ul').slideUp(200);
             });
         });
     </script>
